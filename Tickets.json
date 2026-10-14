@@ -1,0 +1,41 @@
+[
+    {
+        "ticket_id": "T-1001",
+        "apartment_id": "A-45",
+        "citizen_name": "Ahmed Mahmoud",
+        "phone": "01011122233",
+        "category": "Plumbing",
+        "priority": "High",
+        "neighborhood": "First District",
+        "status": "Open",
+        "team": "Quick Maintenance Team",
+        "created_at": "2026-10-14T09:00:00",
+        "deadline": "2026-10-14T15:00:00"
+    },
+    {
+        "ticket_id": "T-1002",
+        "apartment_id": "B-12",
+        "citizen_name": "Sarah Ali",
+        "phone": "01122233344",
+        "category": "Electrical",
+        "priority": "Medium",
+        "neighborhood": "Third District",
+        "status": "In Progress",
+        "team": "Emergency Team",
+        "created_at": "2026-10-14T10:30:00",
+        "deadline": "2026-10-15T10:30:00"
+    },
+    {
+        "ticket_id": "T-1003",
+        "apartment_id": "C-08",
+        "citizen_name": "Mohamed Hassan",
+        "phone": "01233344455",
+        "category": "Cleaning",
+        "priority": "Low",
+        "neighborhood": "Seventh District",
+        "status": "Closed",
+        "team": "General Cleaning Team",
+        "created_at": "2026-10-12T08:15:00",
+        "deadline": "2026-10-14T08:15:00"
+    }
+]
