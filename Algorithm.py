@@ -1,4 +1,6 @@
 from datetime import timedelta
+
+
 from exceptions import EmptyQueueError, NothingToUndoError
 from constants import CATEGORY_PRIMARY_TEAMS
 import complaint
@@ -128,6 +130,7 @@ class ComplaintSorter:
 
         return self._merge(sorted_left, sorted_right, by, reverse)
 
+
     def _merge(self, left, right, by, reverse):
         merged = []
         i = j = 0
@@ -144,6 +147,44 @@ class ComplaintSorter:
         merged.extend(right[j:])
         return merged
 
+
+def sequential_search(complaints, field, target):
+
+    if not target:
+        return []
+
+    target_str = str(target).strip().lower()
+    matches = []
+
+    for comp in complaints:
+        val = getattr(comp, field, None)
+        if val is not None and target_str in str(val).strip().lower():
+            matches.append(comp)
+
+    return matches
+
+
+def binary_search_by_id(sorted_complaints, target_id):
+
+    if not sorted_complaints or not target_id:
+        return None
+
+    target_id_str = str(target_id).strip()
+    low = 0
+    high = len(sorted_complaints) - 1
+
+    while low <= high:
+        mid = (low + high) // 2
+        mid_id = sorted_complaints[mid].ticket_id
+
+        if mid_id == target_id_str:
+            return sorted_complaints[mid]
+        elif mid_id < target_id_str:
+            low = mid + 1
+        else:
+            high = mid - 1
+
+    return None
 
 # Best team selection
 class TeamSelection:
@@ -184,10 +225,21 @@ class DuplicateDetector:
                     comp.get_status() not in ["Resolved", "Rejected"]):
 
                 time_diff = abs(new_complaint.created_at - comp.created_at)
-                # استخدام timedelta لمطابقة الفارق الزمني بدقة مع كائنات datetime
+
                 if time_diff <= timedelta(hours=self.time_window_hours):
                     return comp
         return None
+
+
+def build_complaint_index(complaints):
+
+    return {comp.ticket_id: comp for comp in complaints}
+
+def hash_lookup(complaint_index, complaint_id):
+
+    if not complaint_index or not complaint_id:
+        return None
+    return complaint_index.get(str(complaint_id).strip())
 
 
 # Undo Stack
@@ -201,7 +253,7 @@ class UndoAction:
 
     def revert(self):
         self.complaint.set_status(self.prev_status, force=True)
-        self.complaint.assign_to_team(self.prev_team)
+        self.complaint._Complaint__team = self.prev_team
 
 
 class UndoStack:
