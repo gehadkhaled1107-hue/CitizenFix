@@ -1,12 +1,27 @@
 from datetime import datetime , timedelta
+
+
 from constants import (
     STATUSES,
     TEAMS,
     DATETIME_FORMAT,
     PRIORITY_LABELS,
-    PRIORITY_HOURS
+    PRIORITY_HOURS,
+    CATEGORY_WEIGHTS,
+    NEIGHBORHOOD_WEIGHTS
 )
+def calculate_priority(category: str, neighborhood: str = None) -> int:
 
+    cat_score = CATEGORY_WEIGHTS.get(category, 1)
+    neigh_score = NEIGHBORHOOD_WEIGHTS.get(neighborhood, 0)
+    total_score = cat_score + neigh_score
+
+    if total_score >= 4:
+        return 1
+    elif total_score == 3:
+        return 2
+    else:
+        return 3
 class Complaint():
     STATUS_TRANSITIONS = {
     "Pending":     {"Assigned", "Rejected"},
@@ -17,7 +32,7 @@ class Complaint():
     }
     
     def __init__(self, ticket_id, apartment_id, citizen_name, phone,
-                    category, priority, created_at=None, neighborhood=None):
+                    category, priority = None, created_at=None, neighborhood=None):
         #user part
         self.ticket_id = ticket_id
         self.apartment_id = apartment_id
@@ -26,12 +41,17 @@ class Complaint():
         self.category = category
         self.priority = priority
         self.neighborhood = neighborhood
+
+        if priority is not None:
+            self.priority = int(priority)
+        else:
+            self.priority = calculate_priority(self.category, self.neighborhood)
         
         #Admin part
         self.__status = STATUSES[0]
         self.__team = None
         self.created_at = created_at if created_at else datetime.now().replace(second=0, microsecond=0)
-        self.deadline = self.created_at + timedelta(hours=PRIORITY_HOURS[priority])
+        self.deadline = self.created_at + timedelta(hours=PRIORITY_HOURS[self.priority])
         
     def get_status(self):
         return self.__status
