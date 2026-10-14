@@ -1,0 +1,177 @@
+
+from datetime import datetime
+from complaint import Complaint
+
+
+class CustomHashTable:
+    def __init__(self, size=10):
+        self.size = size
+        self.table = [[] for _ in range(size)]
+    def hash(self, key):
+        key = str(key)
+        hash_value = 0
+        for char in key:
+            hash_value += ord(char)
+        return hash_value % self.size
+
+    def put(self, key, value):
+        key = str(key)
+        index = self.hash(key)
+        for item in self.table[index]:
+            if item[0] == key:
+                item[1] = value
+                return
+        self.table[index].append([key, value])
+
+    def get(self, key):
+        key = str(key)
+        index = self.hash(key)
+        for item in self.table[index]:
+            if item[0] == key:
+                return item[1]
+
+        return None
+
+
+
+# hash lookup
+# s citizen complaints by phone number
+
+class PhoneHashSearch:
+
+    def __init__(self, complaints):
+        self.complaints = complaints
+        self.phone_hash = CustomHashTable()
+        self.build_hash()
+
+    def build_hash(self):
+        for complaint in self.complaints:
+            phone = complaint.phone
+            existing = self.phone_hash.get(phone)
+            if existing is None:
+                existing = []
+            existing.append(complaint)
+            self.phone_hash.put(phone, existing)
+
+    def search(self, phone):
+        return self.phone_hash.get(phone) or []
+
+#  HASH LOOKUP
+# Search team by team ID
+
+class TeamHashSearch:
+    def __init__(self, complaints):
+        self.complaints = complaints
+        self.team_hash = CustomHashTable()
+        self.build_hash()
+    def build_hash(self):
+        for team_id, team_name in TEAMS.items():
+            self.team_hash.put(team_id, team_name)
+
+    def search(self, team_id):
+        team_name = self.team_hash.get(team_id)
+        if team_name is None:
+            return None
+        assigned_complaints = []
+        for complaint in self.complaints:
+            if complaint.get_team() == team_name:
+                assigned_complaints.append(complaint)
+        return {
+            "team_id": team_id,
+            "team_name": team_name,
+            "complaints": assigned_complaints}
+
+
+
+#  BINARY S
+# s Complaints by Created Date
+
+class DateBinarySearch:
+
+    def __init__(self, complaints=None):
+        self.complaints = []
+
+        if complaints:
+            self.set_complaints(complaints)
+
+    def set_complaints(self, complaints):
+        complaints_list = list(complaints)
+        n = len(complaints_list)
+        for i in range(1, n):
+            key_complaint = complaints_list[i]
+            j = i - 1
+            while j >= 0 and complaints_list[j].created_at > key_complaint.created_at:
+                complaints_list[j + 1] = complaints_list[j]
+                j -= 1
+            complaints_list[j + 1] = key_complaint
+        self.complaints = complaints_list
+
+    def search(self, target_date):
+        if isinstance(target_date, str):
+            target_date = datetime.strptime(target_date, "%Y-%m-%d").date()
+
+        elif isinstance(target_date, datetime):
+            target_date = target_date.date()
+        left = 0
+        right = len(self.complaints) - 1
+
+        while left <= right:
+            mid = (left + right) // 2
+            current_date = self.complaints[mid].created_at.date()
+            if current_date == target_date:
+                left_bound = mid
+                i = mid - 1
+                while i >= 0:
+                    if self.complaints[i].created_at.date() == target_date:
+                        left_bound = i
+                        i -= 1
+                    else:
+                        break
+                right_bound = mid
+                i = mid + 1
+                while i < len(self.complaints):
+                    if self.complaints[i].created_at.date() == target_date:
+                        right_bound = i
+                        i += 1
+                    else:
+                        break
+                return self.complaints[left_bound: right_bound + 1]
+
+            elif current_date < target_date:
+                left = mid + 1
+            else:
+                right = mid - 1
+        return []
+
+
+#  SEQUENTIAL S
+# S Complaints by Category
+
+class CategorySequentialSearch:
+
+    def __init__(self, complaints=None):
+        self.complaints = complaints if complaints else []
+
+    def set_complaints(self, complaints):
+        self.complaints = complaints
+
+    def search(self, category):
+        results = []
+        for complaint in self.complaints:
+
+            if complaint.category.lower() == category.lower():
+                results.append(complaint)
+
+        return results
+
+
+# HASH LOOKUP - S BY T ID
+class TicketHashSearch:
+
+    def __init__(self, complaints):
+        self.ticket_hash = CustomHashTable()
+        for complaint in complaints:
+            self.ticket_hash.put( complaint.ticket_id,complaint)
+
+    def search(self, ticket_id):
+        return self.ticket_hash.get(ticket_id)
