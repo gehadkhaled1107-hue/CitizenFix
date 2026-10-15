@@ -6,6 +6,19 @@ from constants import (
     PRIORITY_LABELS,
     PRIORITY_HOURS
 )
+from exceptions import ValidationError, MissingFieldError
+from validators import (
+    validate_ticket_id,
+    validate_apartment_id,
+    validate_name,
+    validate_phone,
+    validate_category,
+    validate_priority,
+    validate_neighborhood,
+    validate_status,
+    validate_team,
+    validate_date
+)
 
 class Complaint():
     STATUS_TRANSITIONS = {
@@ -16,22 +29,32 @@ class Complaint():
     "Rejected":    set(),
     }
     
+    REQUIRED_FIELDS = (
+    "ticket_id", "apartment_id", "citizen_name", "phone",
+    "category", "priority", "status", "created_at"
+    )
+    
     def __init__(self, ticket_id, apartment_id, citizen_name, phone,
                     category, priority, created_at=None, neighborhood=None):
         #user part
-        self.ticket_id = ticket_id
-        self.apartment_id = apartment_id
-        self.citizen_name = citizen_name
-        self.phone = phone
-        self.category = category
-        self.priority = priority
-        self.neighborhood = neighborhood
+        self.ticket_id = validate_ticket_id(ticket_id)
+        self.apartment_id = validate_apartment_id(apartment_id)
+        self.citizen_name = validate_name(citizen_name)
+        self.phone = validate_phone(phone)
+        self.category = validate_category(category)
+        self.priority = validate_priority(priority)
+        self.neighborhood = validate_neighborhood(neighborhood)
         
         #Admin part
         self.__status = STATUSES[0]
         self.__team = None
-        self.created_at = created_at if created_at else datetime.now().replace(second=0, microsecond=0)
-        self.deadline = self.created_at + timedelta(hours=PRIORITY_HOURS[priority])
+        
+        if created_at is None:
+            self.created_at = datetime.now().replace(second=0, microsecond=0)
+        else:
+            self.created_at = validate_date(created_at)
+        
+        self.deadline = self.created_at + timedelta(hours=PRIORITY_HOURS[self.priority])
         
     def get_status(self):
         return self.__status
@@ -71,24 +94,29 @@ class Complaint():
     }
     
     def dict_to_comp(comp, data):
-        try:
-            dict_comp = comp(
-                ticket_id=data["ticket_id"],
-                apartment_id=data["apartment_id"],
-                citizen_name=data["citizen_name"],
-                phone=data["phone"],
-                category=data["category"],
-                priority=int(data["priority"]),
-                created_at=datetime.strptime(data["created_at"], DATETIME_FORMAT),
-                neighborhood=data.get("neighborhood"),
-            )
-            if not dict_comp.set_status(data["status"], force=True):
-                return None
-            dict_comp.__team = data.get("team") or None
-            return dict_comp
+        if type(data) != dict:
+            raise ValidationError("Complaint data must be a dictionary.", value=data)
+        for field in comp.REQUIRED_FIELDS:
+            if field not in data:
+                raise MissingFieldError(f"Missing required field: {field}", value=field)
+            
+        dict_comp = comp(
+            ticket_id=data["ticket_id"],
+            apartment_id=data["apartment_id"],
+            citizen_name=data["citizen_name"],
+            phone=data["phone"],
+            category=data["category"],
+            priority=data["priority"],
+            created_at=data["created_at"],
+            neighborhood=data.get("neighborhood"),
+        )
         
-        except Exception:
-            return None
+        dict_comp.set_status(validate_status(data["status"]), force=True)
+        team_name = data.get("team")
+        if team_name:
+            dict_comp.__team = validate_team(team_name)
+        return dict_comp
+
 
     def __str__(self):
         return (
