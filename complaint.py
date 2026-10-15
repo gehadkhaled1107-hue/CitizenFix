@@ -107,12 +107,3 @@ class Complaint():
             f"Created      : {self.created_at.strftime(DATETIME_FORMAT)}\n"
             f"SLA Deadline : {self.deadline.strftime(DATETIME_FORMAT)}\n"
         )
-
-
-
-c = Complaint("C-0001", "ASIC-0001", "Ahmed", "01012345678", "Water", 1)
-c.assign_to_team("Electricity Team")
-c.set_status("In Progress")
-c2 = Complaint.dict_to_comp(Complaint, c.comp_to_dict())
-print(c2.get_status(), c2.get_team())
-print(c2)
