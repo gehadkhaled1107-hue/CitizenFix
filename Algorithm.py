@@ -1,6 +1,4 @@
 from datetime import timedelta
-
-
 from exceptions import EmptyQueueError, NothingToUndoError
 from constants import CATEGORY_PRIMARY_TEAMS
 import complaint
@@ -47,18 +45,18 @@ class ComplaintPriorityQueue:
 
     def push(self, complaints_obj):
         if not self._items:
-            self._items.append(complaint)
+            self._items.append(complaints_obj)
             return
 
         inserted = False
         for i in range(len(self._items)):
             if self._is_higher_urgency(complaints_obj, self._items[i]):
-                self._items.insert(i, complaint)
+                self._items.insert(i, complaints_obj)
                 inserted = True
                 break
 
         if not inserted:
-            self._items.append(complaint)
+            self._items.append(complaints_obj)
 
     def pop(self):
         if self.is_empty():

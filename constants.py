@@ -1,6 +1,21 @@
 # FIXED FOR THE WHOLE PROGRAM
 # safe import and easy to update
 
+ROLES = (
+    "Citizen",
+    "OpsTeam",
+    "Admin"
+    )
+
+ACTIONS = (
+    "submit_complaint",
+    "view_own_complaints",
+    "view_all_complaints",
+    "assign_complaint",
+    "update_status",
+    "view_reports",
+)
+
 CATEGORIES = (
     "Electricity",
     "Water",
