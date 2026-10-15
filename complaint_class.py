@@ -1,11 +1,28 @@
 from datetime import datetime , timedelta
+
+
 from constants import (
     STATUSES,
     TEAMS,
     DATETIME_FORMAT,
     PRIORITY_LABELS,
-    PRIORITY_HOURS
+    PRIORITY_HOURS,
+    CATEGORY_WEIGHTS,
+    NEIGHBORHOOD_WEIGHTS
 )
+def calculate_priority(category: str, neighborhood: str = None) -> int:
+
+    cat_score = CATEGORY_WEIGHTS.get(category, 1)
+    neigh_score = NEIGHBORHOOD_WEIGHTS.get(neighborhood, 0)
+    total_score = cat_score + neigh_score
+
+    if total_score >= 4:
+        return 1
+    elif total_score == 3:
+        return 2
+    else:
+        return 3 
+    
 from exceptions import ValidationError, MissingFieldError
 from validators import (
     validate_ticket_id,
@@ -35,7 +52,7 @@ class Complaint():
     )
     
     def __init__(self, ticket_id, apartment_id, citizen_name, phone,
-                    category, priority, created_at=None, neighborhood=None):
+                    category, priority = None, created_at=None, neighborhood=None):
         #user part
         self.ticket_id = validate_ticket_id(ticket_id)
         self.apartment_id = validate_apartment_id(apartment_id)
@@ -44,6 +61,11 @@ class Complaint():
         self.category = validate_category(category)
         self.priority = validate_priority(priority)
         self.neighborhood = validate_neighborhood(neighborhood)
+
+        if priority is not None:
+            self.priority = int(priority)
+        else:
+            self.priority = calculate_priority(self.category, self.neighborhood)
         
         #Admin part
         self.__status = STATUSES[0]

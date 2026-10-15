@@ -55,6 +55,38 @@ TEAMS = (
     "General Maintenance Team",
 )
 
+CATEGORY_WEIGHTS = {
+    "Electricity": 4,
+    "Gas": 4,
+    "Water": 3,
+    "Security": 3,
+    "Sanitation": 2,
+    "Road maintenance": 2,
+    "Internet": 1,
+    "General": 1,
+}
+
+
+NEIGHBORHOOD_WEIGHTS = {
+    "Block A": 1,
+    "Block B": 1,
+    "Block C": 1,
+    "Commercial Strip": 0,
+    "Gate Area": 0,
+    "Garden": -1,
+}
+
+CATEGORY_PRIMARY_TEAMS = {
+    "Electricity": ["Electricity Team", "General Maintenance Team"],
+    "Water": ["Water & Gas Team", "General Maintenance Team"],
+    "Gas": ["Water & Gas Team", "General Maintenance Team"],
+    "Sanitation": ["Sanitation Team", "General Maintenance Team"],
+    "Internet": ["Internet & Security Team", "General Maintenance Team"],
+    "Security": ["Internet & Security Team", "General Maintenance Team"],
+    "Road maintenance": ["General Maintenance Team"],
+    "General": ["General Maintenance Team"],
+}
+
 DATETIME_FORMAT = "%Y-%m-%d %H:%M"
 
 TICKET_ID_PREFIX = "C-"
