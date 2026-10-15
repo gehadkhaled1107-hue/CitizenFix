@@ -146,7 +146,7 @@ def validate_team(team):
     return find_official_option(team, TEAMS, InvalidTeamError)
 
 def validate_priority(priority):
-    if type(priority) == str and priority.strip().isdigit():
+    if type(priority) == str and priority.strip().isdecimal():
         priority = int(priority.strip())
     if type(priority) != int or priority not in PRIORITY_LABELS:
         raise InvalidPriorityError(value=priority)

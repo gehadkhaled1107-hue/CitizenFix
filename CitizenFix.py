@@ -3,25 +3,25 @@ import os
 from collections import Counter
 from datetime import datetime
 
-from CitizenFix.Final_CLI.constants import (
+from constants import (
     ROLES, CATEGORIES, STATUSES, TEAMS, PRIORITY_LABELS,
     NEIGHBORHOOD_WEIGHTS, DATETIME_FORMAT, TICKET_ID_PREFIX, ID_DIGITS,
 )
-from CitizenFix.Final_CLI.exceptions import (
+from exceptions import (
     CitizenFixError, ComplaintNotFoundError, DuplicateTicketError,
     InvalidStatusTransitionError, InvalidDateError, DataSaveError, DataLoadError
 )
-from CitizenFix.Final_CLI.complaint import Complaint, calculate_priority
-from CitizenFix.Final_CLI.users import create_user_by_role
-from CitizenFix.Final_CLI.validators import validate_phone, validate_ticket_id
-from CitizenFix.Final_CLI.json_functions import load_data, save_data
-from CitizenFix.Final_CLI.Algorithm import (
+from complaint import Complaint, calculate_priority
+from users import create_user_by_role
+from validators import validate_phone, validate_ticket_id
+from json_functions import load_data, save_data
+from Algorithm import (
     ComplaintQueue, ComplaintPriorityQueue, ComplaintSorter,
     TeamSelection, DuplicateDetector, UndoStack,
     build_complaint_index, hash_lookup, sequential_search,
     binary_search_by_id,
 )
-from CitizenFix.Final_CLI.Searchtypes import (
+from Searchtypes import (
     PhoneHashSearch, TeamHashSearch, DateBinarySearch,
     CategorySequentialSearch, TicketHashSearch,
 )

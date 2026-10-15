@@ -1,2 +1,0 @@
-# CitizenFix
-Graduation project SIC

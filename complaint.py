@@ -1,6 +1,6 @@
 from datetime import datetime , timedelta
 
-from CitizenFix.Final_CLI.constants import (
+from constants import (
     STATUSES,
     TEAMS,
     DATETIME_FORMAT,
@@ -11,7 +11,7 @@ from CitizenFix.Final_CLI.constants import (
 )
 
 from exceptions import ValidationError, MissingFieldError
-from CitizenFix.Final_CLI.validators import (
+from validators import (
     validate_ticket_id,
     validate_apartment_id,
     validate_name,

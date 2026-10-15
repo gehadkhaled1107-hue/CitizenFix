@@ -1,6 +1,6 @@
-from CitizenFix.Final_CLI.constants import TEAMS
+from constants import TEAMS
 from datetime import datetime
-from CitizenFix.Final_CLI.complaint import Complaint
+from complaint import Complaint
 
 
 class CustomHashTable:

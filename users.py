@@ -1,7 +1,7 @@
 from constants import ROLES, ACTIONS
 from exceptions import InvalidRoleError, PermissionDeniedError
 from validators import validate_team, validate_apartment_id, find_official_option
-from complaint_class import Complaint
+from complaint import Complaint
 
 CITIZEN_ACTIONS = ("submit_complaint", "view_own_complaints")
 STAFF_ACTIONS = ("view_all_complaints", "assign_complaint", "update_status")
@@ -97,13 +97,13 @@ class OpsTeam(StaffUser):
             return True
 
         if action == "assign_complaint":
-            if complaint.team is None:
+            if complaint.get_team() is None:
                 return True
-            if complaint.team == self.team_name:
+            if complaint.get_team() == self.team_name:
                 return True
             return False
 
-        if complaint.team == self.team_name:
+        if complaint.get_team() == self.team_name:
             return True
         return False
 
