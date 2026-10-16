@@ -60,7 +60,7 @@ def choose(title, options, break_point="cancel"):
 
 # show 15 complaints by default 
 # if there is more print note for the user
-def show_list(complaints, limit=15):
+def show_list(complaints, limit=15, paged=True):
     if not complaints:
         print("\nNo complaints found.")
         return
@@ -68,19 +68,27 @@ def show_list(complaints, limit=15):
     print("\nID || Status || Priority || Category || Team || Deadline")
     print("--" * 40)
 
-    for c in complaints[:limit]:
-        print(
-            c.ticket_id,
-            c.get_status(),
-            PRIORITY_LABELS[c.priority],
-            c.category,
-            c.get_team() or "-",
-            c.deadline.strftime(DATETIME_FORMAT),
-            sep=" || ",
-        )
+    shown = 0
+    while shown < len(complaints):
+        for c in complaints[shown:shown + limit]:
+            print(
+                c.ticket_id,
+                c.get_status(),
+                PRIORITY_LABELS[c.priority],
+                c.category,
+                c.get_team() or "-",
+                c.deadline.strftime(DATETIME_FORMAT),
+                sep=" || ",
+            )
+        shown += limit
 
-    if len(complaints) > limit:
-        print(f"... showing {limit} of {len(complaints)}")
+        if shown >= len(complaints):
+            break
+        if not paged:
+            print(f"... showing {limit} of {len(complaints)}")
+            break
+        if ask(f"... showing {shown} of {len(complaints)} (Enter = next page, 0 = stop): ") == "0":
+            break
 
 # take a list and count repetition by default
 # show it in order or from top or all of them
@@ -377,7 +385,7 @@ class CitizenFixApp:
             queue.push(c)
 
         print(f"\n{queue.size()} pending complaints (most urgent first)")
-        show_list(queue.to_list(), 5)
+        show_list(queue.to_list(), 5, paged=False)
         print(f"Priority queue || {queue.comparisons} comparisons")
 
         if ask("Assign the most urgent one? (y/n): ").lower() == "y":
